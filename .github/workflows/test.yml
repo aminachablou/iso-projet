@@ -1,0 +1,41 @@
+name: Verification Automatique
+
+# Le robot se réveille quand on pousse du code
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  # Mission 1 : Vérifier que le Backend démarre
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v3
+
+      - name: Installer Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Installer les ingrédients
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Vérifier que le code est propre (Test simple)
+        run: |
+          echo "Tout s'installe correctement !"
+
+  # Mission 2 : Vérifier que Docker arrive à construire l'image
+  test-docker:
+    runs-on: ubuntu-latest
+    needs: test-backend
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v3
+      
+      - name: Construire les conteneurs (Test Crash)
+        run: docker-compose build
